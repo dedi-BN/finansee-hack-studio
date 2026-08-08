@@ -1,0 +1,82 @@
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
+from . import crud, schemas
+from .database import SessionLocal, engine, get_db
+from .migrations import run_migrations
+from .seed import seed_if_empty
+
+run_migrations(engine)
+
+with SessionLocal() as db:
+    seed_if_empty(db)
+
+app = FastAPI(title="Finansee Hack Studio API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/api/stats", response_model=schemas.DashboardStats)
+def read_stats(db: Session = Depends(get_db)):
+    return crud.get_stats(db)
+
+
+@app.get("/api/hacks", response_model=list[schemas.Hack])
+def read_hacks(
+    search: str | None = None,
+    category: str | None = None,
+    status: str | None = None,
+    age: str | None = None,
+    employment: str | None = None,
+    sort: str = "updated_at",
+    order: str = "desc",
+    limit: int | None = None,
+    db: Session = Depends(get_db),
+):
+    return crud.list_hacks(
+        db,
+        search=search,
+        category=category,
+        status=status,
+        age=age,
+        employment=employment,
+        sort=sort,
+        order=order,
+        limit=limit,
+    )
+
+
+@app.get("/api/hacks/{hack_id}", response_model=schemas.Hack)
+def read_hack(hack_id: int, db: Session = Depends(get_db)):
+    hack = crud.get_hack(db, hack_id)
+    if not hack:
+        raise HTTPException(status_code=404, detail="Hack not found")
+    return hack
+
+
+@app.post("/api/hacks", response_model=schemas.Hack)
+def create_hack(hack_in: schemas.HackCreate, db: Session = Depends(get_db)):
+    return crud.create_hack(db, hack_in)
+
+
+@app.put("/api/hacks/{hack_id}", response_model=schemas.Hack)
+def update_hack(hack_id: int, hack_in: schemas.HackUpdate, db: Session = Depends(get_db)):
+    hack = crud.get_hack(db, hack_id)
+    if not hack:
+        raise HTTPException(status_code=404, detail="Hack not found")
+    return crud.update_hack(db, hack, hack_in)
+
+
+@app.delete("/api/hacks/{hack_id}")
+def delete_hack(hack_id: int, db: Session = Depends(get_db)):
+    hack = crud.get_hack(db, hack_id)
+    if not hack:
+        raise HTTPException(status_code=404, detail="Hack not found")
+    crud.delete_hack(db, hack)
+    return {"ok": True}

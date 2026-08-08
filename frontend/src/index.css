@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: "Segoe UI", "Assistant", "Arial Hebrew", Arial, sans-serif;
+  background-color: #f7f7f8;
+  color: #1f2328;
+}
+
+/* Numbers/scores read better as plain digits even inside RTL text */
+.ltr-nums {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
