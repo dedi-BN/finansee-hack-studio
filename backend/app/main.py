@@ -16,7 +16,10 @@ app = FastAPI(title="Finansee Hack Studio API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://finansee-hack-studio.vercel.app",  # placeholder - replace with the real Vercel URL once deployed
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
