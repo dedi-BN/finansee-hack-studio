@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from . import crud, schemas
+from . import ai, crud, schemas
 from .database import SessionLocal, engine, get_db
 from .migrations import run_migrations
 from .seed import seed_if_empty
@@ -83,3 +83,16 @@ def delete_hack(hack_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Hack not found")
     crud.delete_hack(db, hack)
     return {"ok": True}
+
+
+@app.post("/api/ai/generate-draft")
+def generate_ai_draft(request: schemas.DraftRequest):
+    try:
+        return ai.generate_draft(
+            topic=request.topic,
+            core_message=request.core_message,
+            audience=request.audience,
+            expertise=request.expertise,
+        )
+    except ai.DraftGenerationError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))

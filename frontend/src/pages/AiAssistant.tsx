@@ -1,19 +1,36 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createHack } from "../lib/api";
+import { API_BASE, createHack } from "../lib/api";
 import { AGE_GROUPS, EMPLOYMENT, EXPERTISE, FAMILY_STATUS, FINANCIAL_STATUS } from "../constants";
 import type { FinanseeSection } from "../lib/finansee";
 import { FINANSEE_SECTION_LABELS } from "../lib/finansee";
 import {
   CORE_MESSAGE_OPTIONS,
   detectCategory,
-  generateDraft,
   generateTitles,
   suggestFinanseeSection,
   type AudienceAnswers,
 } from "../lib/draftAssistant";
 import MultiSelectGroup from "../components/MultiSelectGroup";
 import WritingField from "../components/WritingField";
+import type { HackInput, HackStatus } from "../types";
+
+const AI_DRAFT_TIMEOUT_MS = 120_000;
+
+interface AiDraftFields {
+  title: string;
+  subtitle: string;
+  hook: string;
+  why_it_matters: string;
+  problem: string;
+  example_story: string;
+  content: string;
+  action_steps: string[];
+  cautions: string;
+  bottom_line: string;
+  cta: string;
+  professional_notes: string;
+}
 
 const TOPIC_EXAMPLES = ["החזר מס", "דמי ניהול בפנסיה", "קרן השתלמות", "ביטוחים כפולים", "משכנתא", "השקעות"];
 
@@ -47,6 +64,7 @@ export default function AiAssistant() {
   const [titles, setTitles] = useState<string[]>([]);
   const [selectedTitle, setSelectedTitle] = useState("");
   const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function goToStep4() {
     const detected = expertise || detectCategory(topic);
@@ -72,22 +90,62 @@ export default function AiAssistant() {
 
   async function handleCreate() {
     setCreating(true);
+    setError(null);
     const finalMessage = coreMessage === "אחר" ? customMessage : coreMessage;
-    const draft = generateDraft({
-      topic,
-      coreMessage: finalMessage,
-      audience,
-      finansee,
-      title: selectedTitle,
-      expertise: expertise || detectCategory(topic),
-    });
+    const finalExpertise = expertise || detectCategory(topic);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), AI_DRAFT_TIMEOUT_MS);
+
     try {
+      const res = await fetch(`${API_BASE}/ai/generate-draft`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic,
+          core_message: finalMessage,
+          audience,
+          expertise: finalExpertise,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const detail = await res.json().catch(() => null);
+        throw new Error(detail?.detail || `יצירת הטיוטה נכשלה (שגיאת שרת ${res.status}).`);
+      }
+
+      const aiFields: AiDraftFields = await res.json();
+
+      const draft: HackInput = {
+        ...aiFields,
+        sources: "נדרש אימות מקצועי לפני פרסום.",
+        age_groups: audience.age_groups.length ? audience.age_groups : ["כולם"],
+        family_status: audience.family_status.length ? audience.family_status : ["כולם"],
+        employment: audience.employment.length ? audience.employment : ["כולם"],
+        financial_status: audience.financial_status.length ? audience.financial_status : ["כולם"],
+        expertise: [finalExpertise],
+        importance: 3,
+        virality: 3,
+        potential_savings: 3,
+        urgency: 2,
+        status: "Draft" as HackStatus,
+      };
+
       const created = await createHack(draft);
       navigate(`/hacks/${created.id}`, { replace: true });
     } catch (err) {
       console.error(err);
-      alert("יצירת הטיוטה נכשלה, נסו שוב.");
+      const message =
+        err instanceof DOMException && err.name === "AbortError"
+          ? "יצירת הטיוטה לקחה יותר מדי זמן ובוטלה. נסו שוב."
+          : err instanceof Error
+            ? err.message
+            : "יצירת הטיוטה נכשלה. נסו שוב.";
+      setError(message);
       setCreating(false);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -395,10 +453,26 @@ export default function AiAssistant() {
 
         {step === 6 && (
           <div className="text-center py-10">
-            <p className="text-4xl mb-4 animate-pulse">✨</p>
-            <p className="text-neutral-600">
-              {creating ? "כותב טיוטה ראשונה..." : "כמעט מוכן..."}
-            </p>
+            {error ? (
+              <>
+                <p className="text-4xl mb-4">⚠️</p>
+                <p className="text-neutral-700 font-medium mb-2">יצירת הטיוטה נכשלה</p>
+                <p className="text-sm text-neutral-500 mb-6 whitespace-pre-wrap">{error}</p>
+                <button
+                  onClick={handleCreate}
+                  className="px-6 py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700"
+                >
+                  נסה שוב
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-4xl mb-4 animate-pulse">✨</p>
+                <p className="text-neutral-600">
+                  {creating ? "כותב טיוטה... זה עשוי לקחת עד דקה" : "כמעט מוכן..."}
+                </p>
+              </>
+            )}
           </div>
         )}
       </div>

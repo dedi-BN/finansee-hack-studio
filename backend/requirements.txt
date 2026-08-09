@@ -2,3 +2,5 @@ fastapi
 uvicorn
 sqlalchemy
 pydantic
+anthropic==0.121.0
+python-dotenv==1.2.2

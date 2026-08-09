@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, ConfigDict
 
@@ -48,6 +48,13 @@ class Hack(HackBase):
     number: int
     created_at: datetime
     updated_at: datetime
+
+
+class DraftRequest(BaseModel):
+    topic: str
+    core_message: str
+    audience: Dict[str, Any]
+    expertise: str
 
 
 class DashboardStats(BaseModel):
