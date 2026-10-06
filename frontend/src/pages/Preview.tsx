@@ -30,11 +30,6 @@ export default function Preview() {
     return <p className="text-center text-neutral-400 py-10 text-sm">טוען...</p>;
   }
 
-  const sourceLines = hack.sources
-    .split("\n")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
   const finansee = parseFinanseeSection(hack.cta);
   const hasFinanseeSection = !isFinanseeSectionEmpty(finansee);
   const isLegacyCta = !hasFinanseeSection && hack.cta.trim().length > 0;
@@ -197,17 +192,6 @@ export default function Preview() {
           </div>
         )}
 
-        {sourceLines.length > 0 && (
-          <Section heading="מקורות">
-            <ul className="space-y-1">
-              {sourceLines.map((line, i) => (
-                <li key={i} className="text-sm text-neutral-500">
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </Section>
-        )}
       </article>
     </div>
   );

@@ -29,7 +29,6 @@ interface AiDraftFields {
   cautions: string;
   bottom_line: string;
   cta: string;
-  professional_notes: string;
 }
 
 const TOPIC_EXAMPLES = ["החזר מס", "דמי ניהול בפנסיה", "קרן השתלמות", "ביטוחים כפולים", "משכנתא", "השקעות"];
@@ -106,6 +105,8 @@ export default function AiAssistant() {
           core_message: finalMessage,
           audience,
           expertise: finalExpertise,
+          title: selectedTitle,
+          finansee_section: finansee,
         }),
         signal: controller.signal,
       });
@@ -119,7 +120,10 @@ export default function AiAssistant() {
 
       const draft: HackInput = {
         ...aiFields,
-        sources: "נדרש אימות מקצועי לפני פרסום.",
+        // The backend already enforces the editor's title; this is a safety net.
+        title: selectedTitle || aiFields.title,
+        professional_notes: "",
+        sources: "",
         age_groups: audience.age_groups.length ? audience.age_groups : ["כולם"],
         family_status: audience.family_status.length ? audience.family_status : ["כולם"],
         employment: audience.employment.length ? audience.employment : ["כולם"],

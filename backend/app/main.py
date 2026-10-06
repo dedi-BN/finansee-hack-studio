@@ -93,6 +93,8 @@ def generate_ai_draft(request: schemas.DraftRequest):
             core_message=request.core_message,
             audience=request.audience,
             expertise=request.expertise,
+            title=request.title,
+            finansee_section=request.finansee_section,
         )
     except ai.DraftGenerationError as exc:
         raise HTTPException(status_code=502, detail=str(exc))

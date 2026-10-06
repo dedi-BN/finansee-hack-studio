@@ -55,6 +55,14 @@ class DraftRequest(BaseModel):
     core_message: str
     audience: Dict[str, Any]
     expertise: str
+    # Title the editor picked in the wizard (step 5). When set, the draft
+    # keeps it verbatim instead of letting the model invent its own.
+    title: str = ""
+    # The 5-part "How Finansee helps" section the editor wrote in step 4,
+    # keyed like FinanseeSection in frontend/src/lib/finansee.ts
+    # (knows / needed / analyzes / receives / nextStep). Non-empty parts are
+    # kept verbatim in `cta`; empty parts are filled by the model.
+    finansee_section: Dict[str, str] = {}
 
 
 class DashboardStats(BaseModel):

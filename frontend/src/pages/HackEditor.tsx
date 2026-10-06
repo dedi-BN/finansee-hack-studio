@@ -263,24 +263,6 @@ export default function HackEditor() {
               />
             </div>
 
-            <div className="border-t border-neutral-100 pt-8 space-y-8">
-              <WritingField
-                label="הערות מקצועיות"
-                value={hack.professional_notes}
-                onChange={(v) => update("professional_notes", v)}
-                placeholder="הערות פנימיות לעריכה ואימות..."
-                minHeight={70}
-                internal
-              />
-              <WritingField
-                label="מקורות"
-                value={hack.sources}
-                onChange={(v) => update("sources", v)}
-                placeholder="כל מקור בשורה נפרדת. אם אין מקור מאומת: נדרש אימות מקצועי לפני פרסום."
-                minHeight={70}
-                helper="מוצג בתצוגה המקדימה כשיש תוכן. אין להציג מקור שאינו קיים."
-              />
-            </div>
           </div>
         </div>
 
