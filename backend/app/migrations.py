@@ -10,6 +10,7 @@ TABLE = "financial_hacks"
 # hand-authored data are always preserved.
 NEW_COLUMNS = [
     ("seed_key", "TEXT"),
+    ("seed_hash", "TEXT"),
     ("subtitle", "TEXT DEFAULT ''"),
     ("why_it_matters", "TEXT DEFAULT ''"),
     ("problem", "TEXT DEFAULT ''"),

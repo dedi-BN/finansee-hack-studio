@@ -158,12 +158,17 @@ def generate_draft(
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=4096,
+            max_tokens=8000,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_prompt}],
         )
     except Exception as exc:  # noqa: BLE001 - surfaced to the caller as-is
         raise DraftGenerationError(f"קריאה ל-Claude נכשלה: {exc}") from exc
+
+    if response.stop_reason == "max_tokens":
+        raise DraftGenerationError(
+            "תשובת המודל נקטעה כי הטיוטה ארוכה מדי. נסו שוב, או קצרו את המסר המרכזי."
+        )
 
     raw_text = "".join(block.text for block in response.content if block.type == "text")
 

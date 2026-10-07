@@ -14,6 +14,10 @@ class FinancialHack(Base):
     # Identifies rows created by the seed/replace scripts so re-running them
     # is idempotent and never touches hand-authored rows. NULL = user-created.
     seed_key = Column(String, unique=True, index=True, nullable=True)
+    # Fingerprint of the editorial content as last written by the seed/sync
+    # script. If a row's current content no longer matches it, someone edited
+    # the row in the UI, and the sync script leaves it alone.
+    seed_hash = Column(String, nullable=True)
 
     title = Column(String, nullable=False, default="")
     subtitle = Column(Text, default="")
