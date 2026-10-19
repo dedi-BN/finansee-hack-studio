@@ -11,6 +11,7 @@ TABLE = "financial_hacks"
 NEW_COLUMNS = [
     ("seed_key", "TEXT"),
     ("seed_hash", "TEXT"),
+    ("source_insight", "TEXT"),
     ("subtitle", "TEXT DEFAULT ''"),
     ("why_it_matters", "TEXT DEFAULT ''"),
     ("problem", "TEXT DEFAULT ''"),
@@ -36,5 +37,11 @@ def run_migrations(engine: Engine) -> None:
             text(
                 "CREATE UNIQUE INDEX IF NOT EXISTS ix_financial_hacks_seed_key "
                 "ON financial_hacks (seed_key)"
+            )
+        )
+        conn.execute(
+            text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS ix_financial_hacks_source_insight "
+                "ON financial_hacks (source_insight)"
             )
         )

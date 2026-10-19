@@ -18,6 +18,10 @@ class FinancialHack(Base):
     # script. If a row's current content no longer matches it, someone edited
     # the row in the UI, and the sync script leaves it alone.
     seed_hash = Column(String, nullable=True)
+    # Insight-bank id this hack was generated from (e.g. "INS-001", or
+    # "INS-001#2" for a second angle). Unique, so a batch run can never
+    # create the same article twice.
+    source_insight = Column(String, unique=True, index=True, nullable=True)
 
     title = Column(String, nullable=False, default="")
     subtitle = Column(Text, default="")

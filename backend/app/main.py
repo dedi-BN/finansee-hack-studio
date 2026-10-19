@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -65,7 +66,16 @@ def read_hack(hack_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/hacks", response_model=schemas.Hack)
 def create_hack(hack_in: schemas.HackCreate, db: Session = Depends(get_db)):
-    return crud.create_hack(db, hack_in)
+    if not (hack_in.source_insight or "").strip():
+        hack_in.source_insight = None
+    try:
+        return crud.create_hack(db, hack_in)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail=f"כבר קיים Hack שנוצר מהתובנה {hack_in.source_insight}",
+        )
 
 
 @app.put("/api/hacks/{hack_id}", response_model=schemas.Hack)
@@ -95,6 +105,9 @@ def generate_ai_draft(request: schemas.DraftRequest):
             expertise=request.expertise,
             title=request.title,
             finansee_section=request.finansee_section,
+            insight=request.insight,
+            avoid_titles=request.avoid_titles,
+            angle=request.angle,
         )
     except ai.DraftGenerationError as exc:
         raise HTTPException(status_code=502, detail=str(exc))

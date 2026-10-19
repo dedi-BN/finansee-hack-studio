@@ -162,6 +162,9 @@ def generate_draft(
     expertise: str,
     title: str = "",
     finansee_section: dict | None = None,
+    insight: dict | None = None,
+    avoid_titles: list[str] | None = None,
+    angle: str = "",
 ) -> dict:
     """Calls Claude to generate a full Hack draft. Raises DraftGenerationError
     on any API or parsing failure, with a message safe to show in the UI.
@@ -180,6 +183,28 @@ def generate_draft(
         f"תחום מקצועי: {expertise}\n"
         f"קהל יעד: {json.dumps(audience, ensure_ascii=False)}\n"
     )
+    insight_lines = [f"- {k}: {v}" for k, v in (insight or {}).items() if v and str(v).strip() not in ("—", "-")]
+    if insight_lines:
+        user_prompt += (
+            "\nרקע מבנק התובנות של Finansee - זו התובנה שהכתבה נשענת עליה. השתמשו בה "
+            "כדי לתאר במדויק מה Finansee מזהה אצל המשתמש, מאילו נתונים, מה חסר לה "
+            "ממנו ומה הצעד הבא בתוך Finansee - ושלבו את זה לאורך הכתבה ובשדה cta. "
+            "זהו חומר רקע פנימי: אל תעתיקו ממנו מילה במילה, ואל תכללו בכתבה ספים, "
+            "מספרים או ערכים שמופיעים בסוגריים מרובעים - הם עדיין לא אושרו מקצועית.\n"
+            + "\n".join(insight_lines)
+            + "\n"
+        )
+    titles_to_avoid = [t for t in (avoid_titles or []) if t and t.strip()]
+    if titles_to_avoid:
+        user_prompt += (
+            "\nכבר קיימות ב-Finansee כתבות על נושא קרוב. הכתבה החדשה חייבת לבחור זווית "
+            "אחרת - סיפור אחר, דמות אחרת, ומסר מרכזי שונה - ולא לחזור על התוכן שלהן. "
+            "גם הכותרת צריכה להיות שונה בבירור:\n"
+            + "\n".join(f"- {t}" for t in titles_to_avoid)
+            + "\n"
+        )
+    if angle.strip():
+        user_prompt += f"\nזווית הכתבה: {angle.strip()}\n"
     if title:
         user_prompt += (
             f"\nכותרת שנבחרה על ידי העורך (חובה להשתמש בה מילה במילה בשדה title, "

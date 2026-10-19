@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -34,7 +34,9 @@ class HackBase(BaseModel):
 
 
 class HackCreate(HackBase):
-    pass
+    # Set only when a hack is generated from the insight bank. Deliberately
+    # not on HackUpdate: saving in the editor never changes or clears it.
+    source_insight: Optional[str] = None
 
 
 class HackUpdate(HackBase):
@@ -46,6 +48,7 @@ class Hack(HackBase):
 
     id: int
     number: int
+    source_insight: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -63,6 +66,15 @@ class DraftRequest(BaseModel):
     # (knows / needed / analyzes / receives / nextStep). Non-empty parts are
     # kept verbatim in `cta`; empty parts are filled by the model.
     finansee_section: Dict[str, str] = {}
+    # Background from the insight bank (what Finansee detects, data sources,
+    # missing info, next step...). Used as context for the model, never
+    # copied verbatim into the article.
+    insight: Dict[str, str] = {}
+    # Titles of existing hacks on the same topic: the new article must take a
+    # different angle from them.
+    avoid_titles: List[str] = []
+    # Optional editorial direction for the angle of this article.
+    angle: str = ""
 
 
 class DashboardStats(BaseModel):
