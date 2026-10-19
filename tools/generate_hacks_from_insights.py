@@ -8,6 +8,7 @@ already configured on the server. Run from the repo root:
     python tools/generate_hacks_from_insights.py --sample    # generate 3 sample articles
     python tools/generate_hacks_from_insights.py             # generate everything still missing
     python tools/generate_hacks_from_insights.py --only INS-001,INS-070#2
+    python tools/generate_hacks_from_insights.py --sample --replace   # delete the sample drafts and write them again
 
 Safety
 ------
@@ -169,6 +170,9 @@ def main() -> None:
     ap.add_argument("--dry-run", action="store_true", help="print the plan only")
     ap.add_argument("--sample", action="store_true", help=f"only {', '.join(SAMPLE_KEYS)}")
     ap.add_argument("--only", help="comma-separated keys, e.g. INS-001,INS-070#2")
+    ap.add_argument("--replace", action="store_true",
+                    help="delete the existing articles in scope and generate them again "
+                         "(only ones still in Draft status - reviewed articles are never touched)")
     args = ap.parse_args()
     api = args.api.rstrip("/")
 
@@ -205,6 +209,21 @@ def main() -> None:
             titles_by_topic[t].append(live[n])
         if job["key"] in done:
             titles_by_topic.setdefault(t, []).append(done[job["key"]]["title"])
+
+    if args.replace:
+        for job in jobs:
+            old = done.get(job["key"])
+            if not old:
+                continue
+            if old.get("status") != "Draft":
+                print(f"  {job['key']}: #{old['number']} is no longer a draft ({old['status']}) - kept as is")
+                continue
+            if args.dry_run:
+                print(f"  {job['key']}: would delete draft #{old['number']} and write it again")
+            else:
+                call(api, "DELETE", f"/hacks/{old['id']}", timeout=60)
+                print(f"  {job['key']}: deleted draft #{old['number']} - it will be written again")
+            del done[job["key"]]
 
     todo = [j for j in jobs if j["key"] not in done]
     print(f"{len(jobs)} article(s) in scope, {len(jobs) - len(todo)} already exist, {len(todo)} to generate.\n")
