@@ -299,10 +299,14 @@ def generate_draft(
     # Enforce the editor's choices regardless of what the model returned.
     if title:
         draft["title"] = title
-    if any(editor_section.values()):
-        model_section = _parse_finansee_section(str(draft.get("cta", "")))
-        merged = {key: editor_section[key] or model_section.get(key, "") for key in FINANSEE_SECTION_LABELS}
-        draft["cta"] = _serialize_finansee_section(merged)
+    model_section = _parse_finansee_section(str(draft.get("cta", "")))
+    merged = {key: editor_section[key] or model_section.get(key, "") for key in FINANSEE_SECTION_LABELS}
+    empty = [FINANSEE_SECTION_LABELS[key] for key, value in merged.items() if not value.strip()]
+    if empty:
+        raise DraftGenerationError(
+            "בפרק \"איך Finansee עוזרת\" שהמודל החזיר חסרים החלקים: " + ", ".join(empty) + ". נסו שוב."
+        )
+    draft["cta"] = _serialize_finansee_section(merged)
 
     return draft
 
