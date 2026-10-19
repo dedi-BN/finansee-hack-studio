@@ -21,6 +21,9 @@ app.add_middleware(
         "http://localhost:5173",
         "https://finansee-hack-studio.vercel.app",  # placeholder - replace with the real Vercel URL once deployed
     ],
+    # Vercel preview deployments of this project (e.g. a design branch) get their
+    # own URLs: finansee-hack-studio-git-<branch>-<team>.vercel.app
+    allow_origin_regex=r"https://finansee-hack-studio-[a-z0-9-]+\.vercel\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )
