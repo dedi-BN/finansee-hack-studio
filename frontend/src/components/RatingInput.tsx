@@ -19,7 +19,7 @@ export default function RatingInput({
             aria-label={`${label} ${n}`}
             className={`w-7 h-7 rounded-md text-xs font-medium border transition-colors ${
               n <= value
-                ? "bg-neutral-900 text-white border-neutral-900"
+                ? "bg-neutral-900 text-white border-neutral-900 font-bold"
                 : "bg-white text-neutral-400 border-neutral-300 hover:border-neutral-400"
             }`}
           >

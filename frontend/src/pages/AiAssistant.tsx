@@ -184,11 +184,17 @@ export default function AiAssistant() {
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm px-6 py-10 md:px-12 md:py-12">
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-md px-6 py-10 md:px-12 md:py-12">
         {step === 1 && (
           <div>
-            <p className="text-4xl mb-3">🤖</p>
-            <h1 className="text-2xl font-bold text-neutral-900 mb-1">עוזר הכתיבה החכם</h1>
+            <span className="fin-ring w-12 h-12 rounded-full p-[3px] mb-4 inline-flex" aria-hidden>
+              <span className="w-full h-full rounded-full bg-white flex items-center justify-center text-fin-violet">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+              </span>
+            </span>
+            <h1 className="text-[1.75rem] font-extrabold tracking-tight text-neutral-900 mb-1">עוזר הכתיבה החכם</h1>
             <p className="text-neutral-500 mb-6">על מה תרצה לכתוב היום?</p>
 
             <input
@@ -215,7 +221,7 @@ export default function AiAssistant() {
             <button
               onClick={() => setStep(2)}
               disabled={!topic.trim()}
-              className="mt-8 w-full py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-8 w-full py-3 rounded-full btn-primary font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               המשך
             </button>
@@ -274,7 +280,7 @@ export default function AiAssistant() {
               <button
                 onClick={() => setStep(3)}
                 disabled={!coreMessage || (coreMessage === "אחר" && !customMessage.trim())}
-                className="flex-1 py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 py-3 rounded-full btn-primary font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 המשך
               </button>
@@ -323,7 +329,7 @@ export default function AiAssistant() {
               </button>
               <button
                 onClick={goToStep4}
-                className="flex-1 py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700"
+                className="flex-1 py-3 rounded-full btn-primary font-medium hover:opacity-90"
               >
                 המשך
               </button>
@@ -339,7 +345,7 @@ export default function AiAssistant() {
             </p>
 
             <div className="mb-6">
-              <p className="text-xs font-semibold tracking-wide text-neutral-400 uppercase mb-2">
+              <p className="text-[13px] font-bold text-neutral-600 mb-2">
                 תחום מקצועי (זוהה אוטומטית, אפשר לשנות)
               </p>
               <div className="flex flex-wrap gap-2">
@@ -349,7 +355,7 @@ export default function AiAssistant() {
                     onClick={() => setExpertise(option)}
                     className={`px-3 py-1 rounded-full text-xs border transition-colors ${
                       expertise === option
-                        ? "bg-neutral-900 text-white border-neutral-900"
+                        ? "bg-neutral-900 text-white border-neutral-900 font-bold"
                         : "bg-white text-neutral-600 border-neutral-300 hover:border-neutral-400"
                     }`}
                   >
@@ -359,7 +365,7 @@ export default function AiAssistant() {
               </div>
             </div>
 
-            <div className="rounded-xl bg-blue-50/70 border border-blue-100 px-5 py-6 space-y-5">
+            <div className="rounded-xl bg-fin-violet-soft/50 border border-[hsl(260_40%_90%)] px-5 py-6 space-y-5">
               <WritingField
                 label={FINANSEE_SECTION_LABELS.knows}
                 value={finansee.knows}
@@ -401,7 +407,7 @@ export default function AiAssistant() {
               </button>
               <button
                 onClick={goToStep5}
-                className="flex-1 py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700"
+                className="flex-1 py-3 rounded-full btn-primary font-medium hover:opacity-90"
               >
                 המשך ליצירת כותרות
               </button>
@@ -447,7 +453,7 @@ export default function AiAssistant() {
               <button
                 onClick={() => setStep(6)}
                 disabled={!selectedTitle}
-                className="flex-1 py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 py-3 rounded-full btn-primary font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 צרו את הטיוטה
               </button>
@@ -464,7 +470,7 @@ export default function AiAssistant() {
                 <p className="text-sm text-neutral-500 mb-6 whitespace-pre-wrap">{error}</p>
                 <button
                   onClick={handleCreate}
-                  className="px-6 py-3 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-700"
+                  className="px-6 py-3 rounded-full btn-primary font-medium hover:opacity-90"
                 >
                   נסה שוב
                 </button>

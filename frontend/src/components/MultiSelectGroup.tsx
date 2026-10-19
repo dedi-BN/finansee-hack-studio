@@ -30,7 +30,7 @@ export default function MultiSelectGroup({
               onClick={() => toggle(option)}
               className={`px-3 py-1 rounded-full text-xs border transition-colors ${
                 active
-                  ? "bg-neutral-900 text-white border-neutral-900"
+                  ? "bg-neutral-900 text-white border-neutral-900 font-bold"
                   : "bg-white text-neutral-600 border-neutral-300 hover:border-neutral-400"
               }`}
             >

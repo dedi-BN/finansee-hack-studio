@@ -4,6 +4,7 @@ import { listHacks } from "../lib/api";
 import { AGE_GROUPS, EMPLOYMENT, EXPERTISE, STATUS_OPTIONS } from "../constants";
 import type { Hack } from "../types";
 import StatusBadge from "../components/StatusBadge";
+import DomainChip from "../components/DomainChip";
 import { categoryLabel, formatDate, primaryAudience } from "../lib/hackDisplay";
 
 const SORT_OPTIONS = [
@@ -38,27 +39,36 @@ export default function HackList() {
   }, [search, category, status, age, employment, sort, order]);
 
   const selectClass =
-    "border border-neutral-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-neutral-900";
+    "min-h-11 border border-neutral-200 rounded-lg px-3 text-sm font-semibold bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-fin-violet";
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">רשימת Hacks</h1>
-        <button
-          onClick={() => navigate("/hacks/new")}
-          className="px-4 py-2 rounded-lg bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-700 transition-colors"
-        >
-          + Hack חדש
-        </button>
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h1 className="text-[1.75rem] font-extrabold tracking-tight">כל ה-Hacks</h1>
+          {!loading && (
+            <p className="mt-1 text-sm font-medium text-neutral-500">
+              <span className="ltr-nums">{hacks.length}</span> תוצאות
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-xl p-4 mb-4 flex flex-wrap gap-3 items-center">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="חיפוש לפי כותרת, Hook או תוכן..."
-          className="flex-1 min-w-[220px] border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900"
-        />
+      <div className="bg-white border border-neutral-200 rounded-xl shadow-md p-4 mb-4 flex flex-wrap gap-3 items-center">
+        <label className="flex-1 min-w-[240px] flex items-center gap-2.5 min-h-11 px-3.5 rounded-lg bg-neutral-100 border border-neutral-200 focus-within:ring-2 focus-within:ring-fin-violet">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-500 shrink-0" aria-hidden>
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          <span className="sr-only">חיפוש</span>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="חיפוש לפי כותרת, פתיח או תוכן"
+            className="flex-1 min-w-0 bg-transparent text-sm focus:outline-none"
+          />
+        </label>
 
         <select value={category} onChange={(e) => setCategory(e.target.value)} className={selectClass}>
           <option value="">כל הקטגוריות</option>
@@ -106,24 +116,25 @@ export default function HackList() {
 
         <button
           onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-          className="border border-neutral-300 rounded-md px-3 py-2 text-sm bg-white hover:bg-neutral-50"
+          className="min-h-11 min-w-11 border border-neutral-200 rounded-lg px-3 text-sm bg-white hover:bg-neutral-50"
           title="הפוך סדר מיון"
+          aria-label={order === "asc" ? "מיון בסדר עולה, לחצו להפוך" : "מיון בסדר יורד, לחצו להפוך"}
         >
           {order === "asc" ? "⬆" : "⬇"}
         </button>
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden">
+      <div className="bg-white border border-neutral-200 rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-right">
-            <thead className="bg-neutral-50 text-neutral-500 text-xs">
+            <thead className="text-neutral-500 text-xs font-bold">
               <tr>
-                <th className="px-4 py-3 font-medium ltr-nums">מספר</th>
-                <th className="px-4 py-3 font-medium">כותרת</th>
-                <th className="px-4 py-3 font-medium">תחום</th>
-                <th className="px-4 py-3 font-medium">קהל יעד מרכזי</th>
-                <th className="px-4 py-3 font-medium">סטטוס</th>
-                <th className="px-4 py-3 font-medium">עדכון אחרון</th>
+                <th className="px-4 py-3.5 font-bold ltr-nums">מספר</th>
+                <th className="px-4 py-3.5 font-bold">כותרת</th>
+                <th className="px-4 py-3.5 font-bold">תחום</th>
+                <th className="px-4 py-3.5 font-bold">קהל יעד מרכזי</th>
+                <th className="px-4 py-3.5 font-bold">סטטוס</th>
+                <th className="px-4 py-3.5 font-bold">עדכון אחרון</th>
               </tr>
             </thead>
             <tbody>
@@ -131,16 +142,16 @@ export default function HackList() {
                 <tr
                   key={hack.id}
                   onClick={() => navigate(`/hacks/${hack.id}`)}
-                  className="border-t border-neutral-100 hover:bg-neutral-50 cursor-pointer"
+                  className="border-t border-neutral-200 hover:bg-neutral-50 cursor-pointer"
                 >
-                  <td className="px-4 py-3 text-neutral-500 ltr-nums">{hack.number}</td>
-                  <td className="px-4 py-3 font-medium text-neutral-900">{hack.title || "(ללא כותרת)"}</td>
-                  <td className="px-4 py-3 text-neutral-600">{categoryLabel(hack)}</td>
-                  <td className="px-4 py-3 text-neutral-600">{primaryAudience(hack)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-4 font-bold text-neutral-500 ltr-nums text-right">{hack.number}</td>
+                  <td className="px-4 py-4 font-bold text-neutral-900 leading-snug min-w-[280px]">{hack.title || "(ללא כותרת)"}</td>
+                  <td className="px-4 py-4"><DomainChip domain={categoryLabel(hack)} /></td>
+                  <td className="px-4 py-4 text-neutral-600 whitespace-nowrap">{primaryAudience(hack)}</td>
+                  <td className="px-4 py-4">
                     <StatusBadge status={hack.status} />
                   </td>
-                  <td className="px-4 py-3 text-neutral-500 ltr-nums">{formatDate(hack.updated_at)}</td>
+                  <td className="px-4 py-4 text-neutral-500 ltr-nums text-right whitespace-nowrap">{formatDate(hack.updated_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -148,9 +159,9 @@ export default function HackList() {
         </div>
 
         {!loading && hacks.length === 0 && (
-          <p className="text-center text-neutral-400 py-10 text-sm">לא נמצאו Hacks תואמים</p>
+          <p className="text-center text-neutral-500 py-10 text-sm">לא נמצאו Hacks תואמים</p>
         )}
-        {loading && <p className="text-center text-neutral-400 py-10 text-sm">טוען...</p>}
+        {loading && <p className="text-center text-neutral-500 py-10 text-sm">טוען...</p>}
       </div>
     </div>
   );

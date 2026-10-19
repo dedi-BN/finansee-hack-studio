@@ -10,8 +10,8 @@ export default function Card({
   className?: string;
 }) {
   return (
-    <section className={`bg-white border border-neutral-200 rounded-xl p-5 ${className}`}>
-      {title && <h2 className="text-sm font-semibold text-neutral-900 mb-4">{title}</h2>}
+    <section className={`bg-white border border-neutral-200 rounded-xl shadow-sm p-5 ${className}`}>
+      {title && <h2 className="text-base font-extrabold text-neutral-900 mb-4">{title}</h2>}
       {children}
     </section>
   );

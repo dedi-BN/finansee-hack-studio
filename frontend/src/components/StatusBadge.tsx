@@ -1,16 +1,14 @@
 import { STATUS_LABELS } from "../constants";
+import { STATUS_STYLES } from "../lib/statusStyle";
 import type { HackStatus } from "../types";
 
-const STYLES: Record<HackStatus, string> = {
-  Draft: "bg-neutral-100 text-neutral-700",
-  "Professional Review": "bg-amber-100 text-amber-800",
-  Approved: "bg-blue-100 text-blue-800",
-  Published: "bg-emerald-100 text-emerald-800",
-};
-
 export default function StatusBadge({ status }: { status: HackStatus }) {
+  const style = STATUS_STYLES[status];
   return (
-    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${STYLES[status]}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${style.chip}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} aria-hidden />
       {STATUS_LABELS[status]}
     </span>
   );

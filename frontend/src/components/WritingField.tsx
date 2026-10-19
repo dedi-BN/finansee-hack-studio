@@ -24,11 +24,11 @@ export default function WritingField({
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
-        <label className="text-xs font-semibold tracking-wide text-neutral-400 uppercase">
+        <label className="text-[13px] font-bold text-neutral-600">
           {label}
         </label>
         {internal && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-fin-amber-soft text-fin-amber-ink border border-[hsl(45_70%_85%)]">
             פנימי · לא מוצג בפרסום
           </span>
         )}
