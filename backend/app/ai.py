@@ -33,6 +33,23 @@ REQUIRED_FIELDS = [
     "cta",
 ]
 
+DRAFT_TOOL = {
+    "name": "save_hack_draft",
+    "description": "שמירת טיוטת ה-Hack המלאה. כל השדות חובה.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            field: (
+                {"type": "array", "items": {"type": "string"}}
+                if field == "action_steps"
+                else {"type": "string"}
+            )
+            for field in REQUIRED_FIELDS
+        },
+        "required": list(REQUIRED_FIELDS),
+    },
+}
+
 # Keys and labels mirror FINANSEE_SECTION_LABELS in frontend/src/lib/finansee.ts.
 FINANSEE_SECTION_LABELS = {
     "knows": "מה Finansee כבר יודעת",
@@ -137,9 +154,8 @@ cautions, וכתבו ש-Finansee תזהה מתי זה המצב.
 בכל בקשה תקבל/י נושא, מסר מרכזי, תחום מקצועי וקהל יעד. עליך להחזיר טיוטה \
 מלאה של Hack.
 
-חשוב מאוד: החזר/י אך ורק אובייקט JSON תקין - בלי טקסט לפני או אחרי, בלי \
-markdown, בלי גדר קוד (```), רק ה-JSON עצמו. האובייקט חייב לכלול בדיוק את \
-11 השדות הבאים, כולם מחרוזות טקסט (action_steps הוא מערך של מחרוזות):
+חשוב מאוד: החזירו את הטיוטה דרך הכלי save_hack_draft, עם בדיוק 11 השדות \
+הבאים, כולם מחרוזות טקסט (action_steps הוא מערך של מחרוזות):
 
 - title: כותרת קצרה שמבטיחה לקורא תועלת ברורה (למשל \"עבדתם אצל שני מעסיקים? ייתכן שמחכה לכם החזר מס\"), ולא חידה
 - subtitle: משפט או שניים שמסבירים למה זה חשוב, וכוללים את היתרון של Finansee: שהיא מזהה את זה בעצמה, בלי שתצטרכו לחשוד או לבקש
@@ -269,6 +285,11 @@ def generate_draft(
             max_tokens=8000,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_prompt}],
+            # Returning the draft through a tool call makes the API hand back
+            # structured fields, instead of us parsing hand-written JSON (long
+            # Hebrew drafts occasionally came back with a missing comma).
+            tools=[DRAFT_TOOL],
+            tool_choice={"type": "tool", "name": DRAFT_TOOL["name"]},
         )
     except Exception as exc:  # noqa: BLE001 - surfaced to the caller as-is
         raise DraftGenerationError(f"קריאה ל-Claude נכשלה: {exc}") from exc
@@ -278,14 +299,18 @@ def generate_draft(
             "תשובת המודל נקטעה כי הטיוטה ארוכה מדי. נסו שוב, או קצרו את המסר המרכזי."
         )
 
-    raw_text = "".join(block.text for block in response.content if block.type == "text")
-
-    try:
-        data = _parse_json_response(raw_text)
-    except (ValueError, json.JSONDecodeError) as exc:
-        raise DraftGenerationError(
-            f"לא ניתן היה לפענח את תשובת המודל כ-JSON תקין: {exc}\n\nתשובת המודל:\n{raw_text}"
-        ) from exc
+    tool_blocks = [block for block in response.content if block.type == "tool_use"]
+    if tool_blocks and isinstance(tool_blocks[0].input, dict):
+        data = tool_blocks[0].input
+    else:
+        # Fallback: the model answered in plain text instead of the tool.
+        raw_text = "".join(block.text for block in response.content if block.type == "text")
+        try:
+            data = _parse_json_response(raw_text)
+        except (ValueError, json.JSONDecodeError) as exc:
+            raise DraftGenerationError(
+                f"לא ניתן היה לפענח את תשובת המודל כ-JSON תקין: {exc}\n\nתשובת המודל:\n{raw_text}"
+            ) from exc
 
     missing = [field for field in REQUIRED_FIELDS if field not in data]
     if missing:
