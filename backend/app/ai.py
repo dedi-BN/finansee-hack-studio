@@ -285,11 +285,13 @@ def generate_draft(
             max_tokens=8000,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_prompt}],
-            # Returning the draft through a tool call makes the API hand back
-            # structured fields, instead of us parsing hand-written JSON (long
-            # Hebrew drafts occasionally came back with a missing comma).
+            # The prompt asks for the draft through this tool, which hands back
+            # structured fields instead of hand-written JSON (long Hebrew drafts
+            # occasionally came back with a missing comma). This model does not
+            # support forcing a tool, so tool_choice stays "auto"; a plain-text
+            # JSON answer is still parsed (and repaired) below.
             tools=[DRAFT_TOOL],
-            tool_choice={"type": "tool", "name": DRAFT_TOOL["name"]},
+            tool_choice={"type": "auto"},
         )
     except Exception as exc:  # noqa: BLE001 - surfaced to the caller as-is
         raise DraftGenerationError(f"קריאה ל-Claude נכשלה: {exc}") from exc
@@ -362,6 +364,14 @@ def _serialize_finansee_section(section: dict) -> str:
     )
 
 
+def _repair_missing_commas(text: str) -> str:
+    """Known glitch in long drafts: the comma and opening quote before the next
+    field are dropped, e.g.  ...לבד."action_steps":[  -> restore them."""
+    for field in REQUIRED_FIELDS:
+        text = re.sub(r'(?<=[^\s,{\[\\])"' + re.escape(field) + r'"\s*:', '","' + field + '":', text)
+    return text
+
+
 def _parse_json_response(text: str) -> dict:
     text = text.strip()
     if text.startswith("```"):
@@ -370,7 +380,10 @@ def _parse_json_response(text: str) -> dict:
             text = text[4:]
         text = text.strip()
 
-    parsed = json.loads(text)
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        parsed = json.loads(_repair_missing_commas(text))
     if not isinstance(parsed, dict):
         raise ValueError("תשובת המודל אינה אובייקט JSON")
     return parsed
