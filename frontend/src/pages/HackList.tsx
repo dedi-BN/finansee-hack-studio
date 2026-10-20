@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { listHacks } from "../lib/api";
-import { AGE_GROUPS, EMPLOYMENT, EXPERTISE, STATUS_OPTIONS } from "../constants";
+import { AGE_GROUPS, EMPLOYMENT, EXPERTISE } from "../constants";
 import type { Hack } from "../types";
-import StatusBadge from "../components/StatusBadge";
 import DomainChip from "../components/DomainChip";
 import { categoryLabel, formatDate, primaryAudience } from "../lib/hackDisplay";
 
@@ -11,7 +10,6 @@ const SORT_OPTIONS = [
   { value: "updated_at", label: "עדכון אחרון" },
   { value: "number", label: "מספר" },
   { value: "title", label: "כותרת" },
-  { value: "status", label: "סטטוס" },
 ];
 
 export default function HackList() {
@@ -21,7 +19,6 @@ export default function HackList() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
-  const [status, setStatus] = useState("");
   const [age, setAge] = useState("");
   const [employment, setEmployment] = useState("");
   const [sort, setSort] = useState("updated_at");
@@ -30,13 +27,13 @@ export default function HackList() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(true);
-      listHacks({ search, category, status, age, employment, sort, order })
+      listHacks({ search, category, age, employment, sort, order })
         .then(setHacks)
         .catch(console.error)
         .finally(() => setLoading(false));
     }, 250);
     return () => clearTimeout(timeout);
-  }, [search, category, status, age, employment, sort, order]);
+  }, [search, category, age, employment, sort, order]);
 
   const selectClass =
     "min-h-11 border border-neutral-200 rounded-lg px-3 text-sm font-semibold bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-fin-violet";
@@ -79,14 +76,6 @@ export default function HackList() {
           ))}
         </select>
 
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className={selectClass}>
-          <option value="">כל הסטטוסים</option>
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </select>
 
         <select value={age} onChange={(e) => setAge(e.target.value)} className={selectClass}>
           <option value="">כל הגילאים</option>
@@ -133,7 +122,6 @@ export default function HackList() {
                 <th className="px-4 py-3.5 font-bold">כותרת</th>
                 <th className="px-4 py-3.5 font-bold">תחום</th>
                 <th className="px-4 py-3.5 font-bold">קהל יעד מרכזי</th>
-                <th className="px-4 py-3.5 font-bold">סטטוס</th>
                 <th className="px-4 py-3.5 font-bold">עדכון אחרון</th>
               </tr>
             </thead>
@@ -148,9 +136,6 @@ export default function HackList() {
                   <td className="px-4 py-4 font-bold text-neutral-900 leading-snug min-w-[280px]">{hack.title || "(ללא כותרת)"}</td>
                   <td className="px-4 py-4"><DomainChip domain={categoryLabel(hack)} /></td>
                   <td className="px-4 py-4 text-neutral-600 whitespace-nowrap">{primaryAudience(hack)}</td>
-                  <td className="px-4 py-4">
-                    <StatusBadge status={hack.status} />
-                  </td>
                   <td className="px-4 py-4 text-neutral-500 ltr-nums text-right whitespace-nowrap">{formatDate(hack.updated_at)}</td>
                 </tr>
               ))}
