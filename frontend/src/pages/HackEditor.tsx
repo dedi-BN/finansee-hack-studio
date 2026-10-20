@@ -104,14 +104,14 @@ export default function HackEditor() {
           <button
             disabled={!savedHack}
             onClick={() => savedHack && navigate(`/hacks/${savedHack.id}/preview`)}
-            className="px-4 py-2 rounded-lg border border-neutral-300 bg-white text-sm font-medium hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-full border border-neutral-200 bg-white text-sm font-medium hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             תצוגה מקדימה
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 rounded-lg bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-700 disabled:opacity-50"
+            className="px-5 py-2 rounded-full btn-primary text-sm font-medium hover:opacity-90 disabled:opacity-50"
           >
             {saving ? "שומר..." : "שמירה"}
           </button>
@@ -120,7 +120,7 @@ export default function HackEditor() {
 
       <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8 items-start">
         {/* Writing area */}
-        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm px-6 py-8 md:px-14 md:py-12 order-1">
+        <div className="bg-white rounded-xl border border-neutral-200 shadow-md px-6 py-8 md:px-14 md:py-12 order-1">
           <input
             value={hack.title}
             onChange={(e) => update("title", e.target.value)}
@@ -182,7 +182,7 @@ export default function HackEditor() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold tracking-wide text-neutral-400 uppercase mb-2 block">
+              <label className="text-[13px] font-bold text-neutral-600 mb-2 block">
                 מה עושים בפועל
               </label>
               <p className="text-xs text-neutral-400 mb-2">כל שורה היא צעד נפרד.</p>
@@ -204,7 +204,7 @@ export default function HackEditor() {
             />
 
             <div className="bg-neutral-50 border-r-4 border-neutral-800 rounded-lg px-5 py-4">
-              <label className="text-xs font-semibold tracking-wide text-neutral-500 uppercase mb-2 block">
+              <label className="text-[13px] font-bold text-neutral-600 mb-2 block">
                 בשורה התחתונה
               </label>
               <textarea
@@ -216,10 +216,10 @@ export default function HackEditor() {
               />
             </div>
 
-            <div className="rounded-xl bg-blue-50/70 border border-blue-100 px-5 py-6 md:px-7 space-y-6">
+            <div className="rounded-xl bg-fin-violet-soft/50 border border-[hsl(260_40%_90%)] px-5 py-6 md:px-7 space-y-6">
               <div>
-                <h3 className="text-sm font-bold text-blue-950">איך Finansee עוזרת לך</h3>
-                <p className="text-xs text-blue-800/70 mt-1 leading-relaxed">
+                <h3 className="text-sm font-bold text-fin-violet-ink">איך Finansee עוזרת לך</h3>
+                <p className="text-xs text-fin-violet-ink/75 mt-1 leading-relaxed">
                   Finansee כבר מכירה חלק מהפרופיל הפיננסי שלך - ולכן אתם לא מתחילים מאפס. כל Hack
                   צריך להסתיים בצעד קונקרטי בתוך Finansee, לא בעצה כללית.
                 </p>
@@ -283,7 +283,7 @@ export default function HackEditor() {
                 sidebarTab === "assistant" ? "bg-white shadow-sm text-neutral-900" : "text-neutral-500"
               }`}
             >
-              🤖 עוזר AI
+              עוזר עריכה
             </button>
           </div>
 

@@ -7,7 +7,7 @@ export default function AssistantPanel({ hack }: { hack: HackInput }) {
   const [activeTip, setActiveTip] = useState<string | null>(null);
 
   return (
-    <Card title="🤖 עוזר AI">
+    <Card title="עוזר עריכה">
       <p className="text-xs text-neutral-400 mb-4 leading-relaxed">
         בדיקות עריכה מהירות על הטיוטה הנוכחית. לחצו על נושא לקבלת משוב.
       </p>
@@ -18,7 +18,7 @@ export default function AssistantPanel({ hack }: { hack: HackInput }) {
             onClick={() => setActiveTip(tip.id)}
             className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
               activeTip === tip.id
-                ? "bg-neutral-900 text-white border-neutral-900"
+                ? "bg-neutral-900 text-white border-neutral-900 font-bold"
                 : "bg-white text-neutral-600 border-neutral-300 hover:border-neutral-400"
             }`}
           >

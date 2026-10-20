@@ -1,17 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
+
+/* Finansee design language (Finansee Design System V2).
+   The neutral scale, font and radii are remapped to Finansee's tokens so every
+   existing `neutral-*` / `rounded-*` class picks up the brand look. Category
+   colours (teal / violet / blue) are added as `fin-*` utilities. */
+@theme {
+  --font-sans: "Heebo", ui-sans-serif, system-ui, -apple-system, "SF Hebrew", "Segoe UI",
+    "Noto Sans Hebrew", Arial, sans-serif;
+
+  --color-neutral-50: hsl(235 30% 97%);   /* sheet-bg: page background */
+  --color-neutral-100: hsl(230 25% 95%);  /* surface */
+  --color-neutral-200: hsl(230 20% 92%);  /* hairline */
+  --color-neutral-300: hsl(230 20% 86%);
+  --color-neutral-400: hsl(230 13% 56%);
+  --color-neutral-500: hsl(230 15% 46%);  /* muted, passes 4.5:1 on white */
+  --color-neutral-600: hsl(230 20% 35%);  /* chip-ink */
+  --color-neutral-700: hsl(250 35% 22%);
+  --color-neutral-800: hsl(250 40% 16%);
+  --color-neutral-900: hsl(250 45% 12%);  /* ink */
+
+  --color-fin-teal: hsl(178 70% 30%);
+  --color-fin-teal-soft: hsl(176 55% 91%);
+  --color-fin-teal-ink: hsl(178 70% 22%);
+  --color-fin-violet: hsl(262 75% 52%);
+  --color-fin-violet-soft: hsl(260 75% 95%);
+  --color-fin-violet-ink: hsl(262 65% 28%);
+  --color-fin-blue: hsl(222 85% 45%);
+  --color-fin-blue-soft: hsl(220 85% 95%);
+  --color-fin-blue-ink: hsl(222 80% 28%);
+  --color-fin-green: hsl(150 65% 30%);
+  --color-fin-green-soft: hsl(150 55% 94%);
+  --color-fin-amber: hsl(35 70% 40%);
+  --color-fin-amber-soft: hsl(45 80% 93%);
+  --color-fin-amber-ink: hsl(35 70% 26%);
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  --shadow-sm: 0 3px 14px hsla(250, 30%, 25%, 0.05);
+  --shadow-md: 0 4px 18px hsla(250, 30%, 25%, 0.08);
+  --shadow-lg: 0 14px 36px hsla(262, 70%, 12%, 0.18), 0 2px 6px hsla(262, 70%, 12%, 0.06);
+}
 
 :root {
   color-scheme: light;
 }
 
 body {
-  font-family: "Segoe UI", "Assistant", "Arial Hebrew", Arial, sans-serif;
-  background-color: #f7f7f8;
-  color: #1f2328;
+  font-family: var(--font-sans);
+  background-color: var(--color-neutral-50);
+  color: var(--color-neutral-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-fin-violet);
+  outline-offset: 2px;
 }
 
 /* Numbers/scores read better as plain digits even inside RTL text */
 .ltr-nums {
   direction: ltr;
   unicode-bidi: isolate;
+}
+
+/* Finansee's tri-colour gradient text (headline highlight) */
+.fs-gradient {
+  background: linear-gradient(110deg, hsl(262 75% 45%) 0%, hsl(220 85% 50%) 50%, hsl(178 70% 38%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Finansee's tri-colour brand ring */
+.fin-ring {
+  background: conic-gradient(from 200deg, hsl(262 75% 52%), hsl(220 85% 50%), hsl(178 70% 38%), hsl(262 75% 52%));
+}
+
+/* Primary action: Finansee's premium-black */
+.btn-primary {
+  background: linear-gradient(135deg, hsl(250 30% 18%) 0%, hsl(250 50% 8%) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
