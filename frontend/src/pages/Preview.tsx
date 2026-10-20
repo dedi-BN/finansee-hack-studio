@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getHack } from "../lib/api";
 import type { Hack } from "../types";
-import StatusBadge from "../components/StatusBadge";
 import { ACCENT_CLASS, HERO_GRADIENT, domainTone } from "../lib/domainTone";
 import { categoryLabel } from "../lib/hackDisplay";
 import { FINANSEE_SECTION_LABELS, isFinanseeSectionEmpty, parseFinanseeSection } from "../lib/finansee";
@@ -63,7 +62,6 @@ export default function Preview() {
           <span aria-hidden>→</span> חזרה
         </button>
         <div className="flex items-center gap-2.5">
-          <StatusBadge status={hack.status} />
           <Link
             to={`/hacks/${hack.id}`}
             className="min-h-11 inline-flex items-center px-5 rounded-full border border-neutral-200 bg-white text-sm font-bold hover:bg-neutral-50"

@@ -8,13 +8,11 @@ import {
   FAMILY_STATUS,
   FINANCIAL_STATUS,
   SCORE_FIELDS,
-  STATUS_OPTIONS,
 } from "../constants";
-import type { Hack, HackInput, HackStatus } from "../types";
+import type { Hack, HackInput } from "../types";
 import Card from "../components/Card";
 import MultiSelectGroup from "../components/MultiSelectGroup";
 import RatingInput from "../components/RatingInput";
-import StatusBadge from "../components/StatusBadge";
 import WritingField from "../components/WritingField";
 import AssistantPanel from "../components/AssistantPanel";
 import { formatDate } from "../lib/hackDisplay";
@@ -95,7 +93,6 @@ export default function HackEditor() {
           </button>
           <span className="text-neutral-300">|</span>
           <span className="text-sm text-neutral-500 ltr-nums">Hack #{savedHack?.number}</span>
-          <StatusBadge status={hack.status} />
           <span className="text-xs text-neutral-400">
             {savedHack ? `עודכן לאחרונה ${formatDate(savedHack.updated_at)}` : "טרם נשמר"}
           </span>
@@ -346,19 +343,6 @@ export default function HackEditor() {
                 </div>
               </Card>
 
-              <Card title="סטטוס">
-                <select
-                  value={hack.status}
-                  onChange={(e) => update("status", e.target.value as HackStatus)}
-                  className="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900"
-                >
-                  {STATUS_OPTIONS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </Card>
 
               {savedHack && (
                 <div className="text-left pt-1">

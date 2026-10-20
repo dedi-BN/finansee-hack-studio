@@ -2,9 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getStats, listHacks } from "../lib/api";
 import type { DashboardStats, Hack } from "../types";
-import StatCard from "../components/StatCard";
-import StatusBadge from "../components/StatusBadge";
-import { STATUS_DOT } from "../lib/statusStyle";
 import DomainChip from "../components/DomainChip";
 import { ACCENT_CLASS, domainTone } from "../lib/domainTone";
 import { categoryLabel } from "../lib/hackDisplay";
@@ -19,8 +16,6 @@ export default function Dashboard() {
   }, []);
 
   const recent = hacks.slice(0, 6);
-  const inReview = hacks.filter((h) => h.status === "Professional Review").length;
-  const drafts = stats?.draft ?? 0;
 
   const byDomain = useMemo(() => {
     const counts = new Map<string, number>();
@@ -47,18 +42,6 @@ export default function Dashboard() {
         </p>
       </section>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <StatCard label="סה״כ בספרייה" value={total} />
-        <StatCard label="טיוטות" value={drafts} total={total} dotClass={STATUS_DOT.Draft} />
-        <StatCard
-          label="בבדיקה מקצועית"
-          value={stats?.professional_review ?? 0}
-          total={total}
-          dotClass={STATUS_DOT["Professional Review"]}
-        />
-        <StatCard label="מאושרים" value={stats?.approved ?? 0} total={total} dotClass={STATUS_DOT.Approved} />
-        <StatCard label="פורסמו" value={stats?.published ?? 0} total={total} dotClass={STATUS_DOT.Published} />
-      </div>
 
       <div className="flex flex-wrap gap-5 items-start">
         <section className="flex-[999_1_560px] min-w-0 bg-white border border-neutral-200 rounded-xl shadow-md overflow-hidden">
@@ -78,9 +61,6 @@ export default function Dashboard() {
               <span className="flex-1 min-w-0 font-bold leading-snug truncate">{hack.title || "(ללא כותרת)"}</span>
               <span className="hidden sm:inline-flex shrink-0">
                 <DomainChip domain={categoryLabel(hack)} />
-              </span>
-              <span className="shrink-0">
-                <StatusBadge status={hack.status} />
               </span>
             </Link>
           ))}
@@ -106,20 +86,6 @@ export default function Dashboard() {
             ))}
           </section>
 
-          {drafts + inReview > 0 && (
-            <section className="rounded-xl p-5 text-white shadow-lg flex flex-col gap-3 bg-[linear-gradient(160deg,hsl(258_72%_52%)_0%,hsl(265_78%_62%)_55%,hsl(275_85%_75%)_100%)]">
-              <span className="text-sm font-semibold opacity-90">השלב הבא</span>
-              <span className="text-xl font-extrabold leading-snug">
-                {drafts} טיוטות מחכות לבדיקה של איש מקצוע לפני פרסום
-              </span>
-              <Link
-                to="/hacks"
-                className="self-start inline-flex items-center min-h-11 px-5 rounded-full bg-white/20 border border-white/45 text-sm font-bold hover:bg-white/30 transition-colors"
-              >
-                לרשימת ה-Hacks
-              </Link>
-            </section>
-          )}
         </aside>
       </div>
     </div>
